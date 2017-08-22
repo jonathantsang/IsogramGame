@@ -11,7 +11,9 @@ user interaction. For game logic see the FBullCowGame class.
 #include "stdafx.h"
 #include <iostream>
 #include <string>
+#include <map>
 #include "FBullCowGame.h"
+#define TMap std::map
 
 // to make syntax Unreal friendly
 using FText = std::string;
@@ -23,6 +25,7 @@ void PlayGame();
 FText GetValidGuess();
 bool AskToPlayAgain();
 void PrintGameSummary();
+bool IsIsogram(FString);
 
 FBullCowGame BCGame; // instantiate a new game
 
@@ -39,12 +42,22 @@ int32 main()
 void PrintIntro() {
 	// introduce the game
 	std::cout << "Welcome to Bulls and Cows, a fun word game" << std::endl;
+	BCGame.Reset();
+	std::cout << "BONUS: enter an isogram as the solution and let someone else solve" << std::endl;
+	FString UserWord;
+	do {
+		std::cin >> UserWord;
+	} while (!IsIsogram(UserWord));
+
+	BCGame.setMyHiddenWord(UserWord); // This MUST be an isogram
+
 	std::cout << "Can you guess the " << BCGame.GetHiddenWordLength();
 	std::cout << " letter isogram I'm thinking of?" << std::endl;
+
 }
 
 void PlayGame() {
-	BCGame.Reset();
+	
 	int32 MaxTries = BCGame.GetMaxTries();
 
 	// loop asking for guesses while the game is NOT won
@@ -75,7 +88,9 @@ FText GetValidGuess() {
 		// get a guess from the player
 		int32 CurrentTry = BCGame.GetCurrentTry();
 		std::cout << "Try " << CurrentTry << " of " << BCGame.GetMaxTries() << ". Enter your guess: ";
-		
+
+		std::cin.ignore();
+
 		getline(std::cin, Guess);
 		// Check status and give feedback
 		Status = BCGame.CheckGuessValidity(Guess);
@@ -116,4 +131,30 @@ void PrintGameSummary()
 	{
 		std::cout << "Better luck next time!\n" << std::endl;
 	}
+}
+
+bool IsIsogram(FString Word)
+{
+	// treat 0 and 1 letter words as isograms
+	if (Word.length() <= 1) { return true; }
+
+	TMap<char, bool> LetterSeen; // setup our map
+	for (auto Letter : Word)
+	{
+		Letter = tolower(Letter); // handle mixed case
+		if (LetterSeen[Letter])
+		{ // if the letter is in the map
+			return false;
+		}
+		else
+		{
+			LetterSeen[Letter] = true;
+		}
+
+	}
+
+	// otherwise
+	// add the letter to the map as seen
+	return true;
+
 }

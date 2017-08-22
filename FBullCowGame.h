@@ -37,6 +37,7 @@ public:
 
 	void Reset();
 	BullCowCount SubmitValidGuess(FString);
+	void setMyHiddenWord(FString);
 	
 
 private:

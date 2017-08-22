@@ -132,3 +132,8 @@ bool FBullCowGame::IsLowercase(FString Word) const
 	}
 	return true;
 }
+
+void FBullCowGame::setMyHiddenWord(FString Word)
+{
+	MyHiddenWord = Word;
+}
